@@ -12,21 +12,33 @@ export interface IBoard {
   squares: ISquare[][];
   status: BoardStatusEnum;
   turn: ColorEnum;
-  castles: [boolean, boolean, boolean, boolean];
+  castles: boolean[];
+  check: boolean;
+  checkmate: boolean;
+  enPassant: IEnPassant;
+}
+
+export interface IEnPassant {
+  active: boolean;
+  coords: number[];
 }
 
 export interface IMove {
   board: IBoard;
   piece: IPiece;
-  from: string;
-  to: string;
-  capture: boolean;
-  promotion: boolean;
-  check: boolean;
-  checkmate: boolean;
-  stalemate: boolean;
-  enPassant: boolean;
-  castling: boolean;
+  fromIndexed: [number, number];
+  toIndexed: [number, number];
+  from?: string;
+  to?: string;
+  capture?: boolean;
+  promotion?: boolean;
+  check?: boolean;
+  checkmate?: boolean;
+  stalemate?: boolean;
+  enPassant?: boolean;
+  castle?: boolean;
+  doubleStep?: boolean;
+  enPassantCapture?: IEnPassant;
 }
 
 export interface IPiece {
