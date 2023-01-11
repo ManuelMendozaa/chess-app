@@ -1,7 +1,7 @@
 import { IBoard, IPiece, IPieceType, ISquare, PieceNameEnum } from '../models';
 
 const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const rows = [1, 2, 3, 4, 5, 6, 7, 8];
+const rows = [8, 7, 6, 5, 4, 3, 2, 1];
 const pieceTypes: IPieceType[] = [
   { name: 'pawn', value: 1 },
   { name: 'knight', value: 3 },
@@ -13,9 +13,9 @@ const pieceTypes: IPieceType[] = [
 
 export function generateBoard() {
   // Create a 2D array of squares 8x8
-  const squares: ISquare[][] = Array.from({ length: 8 }).map((_, i) => {
-    return Array.from({ length: 8 }).map((_, j) => {
-      const code = columns[j] + rows[i];
+  const squares: ISquare[][] = rows.map((row) => {
+    return columns.map((column) => {
+      const code = column + row;
       const piece = generatePiece(code);
       return {
         code,
@@ -31,6 +31,9 @@ export function generateBoard() {
     status: 'default',
     turn: 'white',
     castles: [true, true, true, true],
+    check: false,
+    checkmate: false,
+    enPassant: { active: false, coords: [] }
   };
   // Return board
   return board;
@@ -56,7 +59,7 @@ function generatePiece(code: string): IPiece | null {
 }
 
 function getPieceType(code: string) {
-  if ([1, 8].includes(Number(code[1]))) return pieceTypes[0];
+  if ([2, 7].includes(Number(code[1]))) return pieceTypes[0];
 
   const column = code[0];
   switch (column) {
@@ -76,4 +79,42 @@ function getPieceType(code: string) {
   }
 
   return pieceTypes[0];
+}
+
+// Board queries
+export function getKingCoords(squares: ISquare[][], color: string): number[] {
+  const square = squares
+    .flat()
+    .find(
+      (s) => s.piece?.pieceType?.name === 'king' && s.piece?.color === color
+    ) as ISquare;
+  return codeToCoords(square.code);
+}
+
+export function getPiecesByColor(
+  squares: ISquare[][],
+  color: string
+): IPiece[] {
+  return squares
+    .flat()
+    .map((square) => {
+      if (square.piece?.color === color) return square.piece;
+      return null;
+    })
+    .filter((piece) => !!piece) as IPiece[];
+}
+
+// Aux functions
+export function codeToCoords(code: string): number[] {
+  const row = code[1];
+  const column = code[0];
+  const rowNumber = rows.indexOf(Number(row));
+  const colNumber = columns.indexOf(column);
+  return [rowNumber, colNumber];
+}
+
+export function coordsToCode(coords: number[]): string {
+  const row = rows[coords[0]];
+  const column = columns[coords[1]];
+  return column + row;
 }
