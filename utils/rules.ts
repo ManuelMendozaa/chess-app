@@ -245,10 +245,10 @@ function verifyKingMove(
 }
 
 /**
- * @description Check if the color provided is in check
- * @param     {ISquare[][]} squares   - The current position of the pieces
- * @param     {string} color          - The color of the player to validate is it's in check
- * @returns                           -
+ * Check if the color provided is in check.
+ * @param {ISquare[][]} squares The current position of the pieces
+ * @param {string} color The color of the player to validate is it's in check
+ * @returns {{ threats: IPiece[]; isCheck: boolean }} An object with the list of threats and if the player is in check
  */
 export function validateCheck(
   squares: ISquare[][],
@@ -275,6 +275,13 @@ export function validateCheck(
   return { threats, isCheck: threats.length > 0 };
 }
 
+/**
+ * Check if the color provided is in checkmate.
+ * @param {ISquare[][]} squares The current position of the pieces
+ * @param {string} color The color of the player to validate is it's in checkmate
+ * @param {IPiece[]} threats The list of threats to the king
+ * @returns {boolean} True if the player is in checkmate, false otherwise
+ */
 export function validateCheckmate(
   squares: ISquare[][],
   color: string,
@@ -331,7 +338,13 @@ export function validateCheckmate(
   return !defenses && !escapes;
 }
 
-function getKeySquares(kingCoords: number[], pieces: IPiece[]) {
+/**
+ * Get the list of squares that are key to defend the king.
+ * @param {number[]} kingCoords The king's coordinates
+ * @param {IPiece[]} pieces The list of pieces that are threatening the king
+ * @returns {number[][]} The list of key squares
+ */
+function getKeySquares(kingCoords: number[], pieces: IPiece[]): number[][] {
   // Get king position
   const [kingRow, kingCol] = kingCoords;
   // Get opponent pieces
@@ -360,7 +373,17 @@ function getKeySquares(kingCoords: number[], pieces: IPiece[]) {
   }, []);
 }
 
-function linearKeySquares(kingCoords: number[], pieceCoords: number[]) {
+/**
+ * Get the list of squares that are key to defend the king
+ * from a linear threat such as a rook or a queen.
+ * @param {number[]} kingCoords The king's coordinates
+ * @param {number[]} pieceCoords The coordinates of the piece that is threatening the king
+ * @returns {number[][]} The list of squares between the king and the piece
+ */
+function linearKeySquares(
+  kingCoords: number[],
+  pieceCoords: number[]
+): number[][] {
   // Extract coords for the king and the attacking piece
   const [kingRow, kingCol] = kingCoords;
   const [pieceRow, pieceCol] = pieceCoords;
@@ -386,7 +409,17 @@ function linearKeySquares(kingCoords: number[], pieceCoords: number[]) {
   }, []);
 }
 
-function diagonalKeySquares(kingCoords: number[], pieceCoords: number[]) {
+/**
+ * Get the list of squares that are key to defend the king
+ * from a diagonal threat such as a bishop or a queen.
+ * @param {number[]} kingCoords The king's coordinates
+ * @param {number[]} pieceCoords The coordinates of the piece that is threatening the king
+ * @returns {number[][]} The list of squares between the king and the piece
+ */
+function diagonalKeySquares(
+  kingCoords: number[],
+  pieceCoords: number[]
+): number[][] {
   // Extract coords for the king and the attacking piece
   const [kingRow, kingCol] = kingCoords;
   const [pieceRow, pieceCol] = pieceCoords;
@@ -412,7 +445,13 @@ function diagonalKeySquares(kingCoords: number[], pieceCoords: number[]) {
   }, []);
 }
 
-function getKingEscapes(row: number, col: number) {
+/**
+ * Get the list of squares that the king can move to.
+ * @param {number} row The row of the king
+ * @param {number} col The column of the king
+ * @returns {number[][]} The list of squares that the king can escape to
+ */
+function getKingEscapes(row: number, col: number): number[][] {
   return [
     [row - 1, col - 1], // up left
     [row - 1, col], // up
