@@ -1,2 +1,1 @@
-export * from './board';
-export * from './moves';
+export * from './filters';
